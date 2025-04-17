@@ -1,70 +1,41 @@
-/***2. Línea de comandos a av**
-
-Escribe una función que divida un string en un arreglo de palabras. Usa `strtok` (man strtok).
-*/
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-char **cortar (char *s, const char *del)
+/**
+ * cortar - Divide un comando en tokens
+ * @comando: Cadena de entrada con el comando
+ * Return: Arreglo de tokens terminado en NULL
+ */
+char **cortar(char *comando)
 {
-	char **array = NULL;
-	int count = 0;
-	char *token;
-	char *temp = strdup(s);
-	int i;
+	char *copia, *token;
+	int contador = 0, i = 0;
+	char **partes;
 
-	token = strtok(temp,del);
+	copia = strdup(comando);
+	if (!copia)
+		return (NULL);
 
+	token = strtok(copia, " \t\n");
 	while (token)
 	{
-		count ++;
-		token = strtok (NULL, del);
+		contador++;
+		token = strtok(NULL, " \t\n");
 	}
-	free (temp);
+	free(copia);
 
-	array = malloc((count +1) * sizeof(char*));
-	if (!array)
+	partes = malloc((contador + 1) * sizeof(char *));
+	if (!partes)
 		return (NULL);
 
-	i = 0;
-	token = strtok (s, del);
-
-	while(token)
+	token = strtok(comando, " \t\n");
+	while (token && i < contador)
 	{
-		array[i] = strdup(token);
-		if (!array[i])
-		{
-		free(array);
-		return (NULL);
-		}
+		partes[i] = token;
 		i++;
-		token = strtok (NULL, del);
+		token = strtok(NULL, " \t\n");
 	}
-	array[i] = NULL;
-	return (array);
-}
-int main()
-{
-	char texto [] = "practicando pa la shell";
-	const char *delimitadores = " \t\n";
-	char **palabras = cortar (texto,delimitadores);
-	int i;
+	partes[i] = NULL;
 
-	if (palabras)
-	{
-		for (i = 0; palabras[i] !=NULL; i++)
-		{
-			printf("Palabra %d: %s\n", i +1, palabras[i]);
-		}
-	}
-	if (palabras)
-	{
-		for(i = 0; palabras[i] != NULL; i++)
-		{
-			free(palabras[i]);
-		}
-		free(palabras);
-	}
-	return (0);
+	return (partes);
 }
